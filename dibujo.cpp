@@ -93,17 +93,22 @@ int main() {
     rainbowButton.setTexture(&rainbowTexture);
     rainbowButton.setPosition(window.getSize().x - diameter - 10, 10);
 
-    // Set default background and pen colors as specified.
     sf::Color backgroundColor(62, 63, 63);
     sf::Color brushColor(211, 211, 211);
     float brushThickness = 5.0f;
 
-    // Background colors list includes the default as the first element.
     std::vector<sf::Color> bgColors = {
         sf::Color(62,63,63), sf::Color(255, 200, 200), sf::Color(200, 255, 200),
-        sf::Color(200, 220, 255), sf::Color(255, 255, 200), sf::Color(220, 200, 255), sf::Color(255, 220, 200)
+        sf::Color(200, 220, 255), sf::Color(255, 255, 200), sf::Color(220, 200, 255),
+        sf::Color(255, 220, 200)
     };
     int bgColorIndex = 0;
+
+    sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
+    squaresTexture.loadFromFile("squares.png");
+    drawTexture.loadFromFile("draw.png");
+    circleTexture.loadFromFile("circle.png");
+    textTexture.loadFromFile("text.png");
 
     std::vector<sf::Vertex> vertices;
     std::vector<sf::RectangleShape> drawnRectangles;
@@ -132,42 +137,20 @@ int main() {
     );
 
     sf::RectangleShape squaresButton(sf::Vector2f(70, 30));
-    squaresButton.setFillColor(sf::Color(180, 180, 255));
+    squaresButton.setTexture(&squaresTexture);
     squaresButton.setPosition(250, 10);
-    sf::RectangleShape drawButton(sf::Vector2f(70, 30));
-    drawButton.setFillColor(sf::Color(180, 255, 180));
-    drawButton.setPosition(330, 10);
-    sf::RectangleShape circleButton(sf::Vector2f(70, 30));
-    circleButton.setFillColor(sf::Color(255, 180, 180));
-    circleButton.setPosition(410, 10);
-    sf::RectangleShape textButton(sf::Vector2f(70, 30));
-    textButton.setFillColor(sf::Color(180, 180, 180));
-    textButton.setPosition(490, 10);
 
-    sf::Text squaresLabel("squares", font, 14);
-    squaresLabel.setFillColor(sf::Color::Black);
-    squaresLabel.setPosition(
-        squaresButton.getPosition().x + (squaresButton.getSize().x - squaresLabel.getLocalBounds().width) / 2,
-        squaresButton.getPosition().y + (squaresButton.getSize().y - squaresLabel.getLocalBounds().height) / 2 - 5
-    );
-    sf::Text drawLabel("draw", font, 14);
-    drawLabel.setFillColor(sf::Color::Black);
-    drawLabel.setPosition(
-        drawButton.getPosition().x + (drawButton.getSize().x - drawLabel.getLocalBounds().width) / 2,
-        drawButton.getPosition().y + (drawButton.getSize().y - drawLabel.getLocalBounds().height) / 2 - 5
-    );
-    sf::Text circleLabel("circle", font, 14);
-    circleLabel.setFillColor(sf::Color::Black);
-    circleLabel.setPosition(
-        circleButton.getPosition().x + (circleButton.getSize().x - circleLabel.getLocalBounds().width) / 2,
-        circleButton.getPosition().y + (circleButton.getSize().y - circleLabel.getLocalBounds().height) / 2 - 5
-    );
-    sf::Text textLabel("text", font, 14);
-    textLabel.setFillColor(sf::Color::Black);
-    textLabel.setPosition(
-        textButton.getPosition().x + (textButton.getSize().x - textLabel.getLocalBounds().width) / 2,
-        textButton.getPosition().y + (textButton.getSize().y - textLabel.getLocalBounds().height) / 2 - 5
-    );
+    sf::RectangleShape drawButton(sf::Vector2f(70, 30));
+    drawButton.setTexture(&drawTexture);
+    drawButton.setPosition(330, 10);
+
+    sf::RectangleShape circleButton(sf::Vector2f(70, 30));
+    circleButton.setTexture(&circleTexture);
+    circleButton.setPosition(410, 10);
+
+    sf::RectangleShape textButton(sf::Vector2f(70, 30));
+    textButton.setTexture(&textTexture);
+    textButton.setPosition(490, 10);
 
     sf::RectangleShape colorPicker(sf::Vector2f(150, 150));
     colorPicker.setPosition(10, 50);
@@ -369,10 +352,6 @@ int main() {
         window.draw(circleButton);
         window.draw(textButton);
         window.draw(rainbowButton);
-        window.draw(squaresLabel);
-        window.draw(drawLabel);
-        window.draw(circleLabel);
-        window.draw(textLabel);
 
         window.display();
     }
