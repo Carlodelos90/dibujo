@@ -59,7 +59,7 @@ sf::Color HsvToRgb(float H, float S, float V) {
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML Drawing Tool with Features");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Dibujo v0.1");
     window.setFramerateLimit(60);
 
     sf::Cursor defaultCursor, textCursor;
