@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <cmath>
+#include <iostream> 
 
 enum class DrawingMode {
     FreeDraw,
@@ -68,7 +69,14 @@ int main() {
     window.setMouseCursor(defaultCursor);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) return -1;
+    if (!font.loadFromFile("arial.ttf")) {
+        // Attempt to load from the installed share directory.
+        std::string fontPath = "../share/dibujo/arial.ttf";
+        if (!font.loadFromFile(fontPath)) {
+            std::cerr << "Failed to load font 'arial.ttf'." << std::endl;
+            return -1;
+        }
+    }
 
     float rainbowRadius = 20.0f;
     int diameter = static_cast<int>(rainbowRadius * 2);
