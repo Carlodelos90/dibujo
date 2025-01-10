@@ -1,7 +1,7 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++11 -I/opt/homebrew/opt/sfml@2/include
-LDFLAGS = -L/opt/homebrew/opt/sfml@2/lib -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS ?= -std=c++11 -I/opt/homebrew/opt/sfml@2/include
+LDFLAGS ?= -L/opt/homebrew/opt/sfml@2/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 # Target executable and source file
 TARGET = dibujov0.1
