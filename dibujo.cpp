@@ -2,6 +2,8 @@
 #include <vector>
 #include <cmath>
 #include <iostream> 
+#include <filesystem>
+
 
 enum class DrawingMode {
     FreeDraw,
@@ -19,6 +21,19 @@ sf::Vector2f normalize(const sf::Vector2f& v) {
     if (length != 0) return sf::Vector2f(v.x / length, v.y / length);
     return v;
 }
+
+
+bool loadFontFromSystem(sf::Font& font, const std::string& fontName) {
+    // macOS system font path
+    std::string fontPath = "/System/Library/Fonts/Supplemental/" + fontName;
+
+    if (std::filesystem::exists(fontPath)) {
+        return font.loadFromFile(fontPath);
+    }
+
+    return false;
+}
+
 
 void addThickLineSegment(std::vector<sf::Vertex>& vertices, const sf::Vector2f& start, const sf::Vector2f& end, float thickness, sf::Color color) {
     sf::Vector2f direction = normalize(end - start);
@@ -59,6 +74,7 @@ sf::Color HsvToRgb(float H, float S, float V) {
     );
 }
 
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Dibujo v0.1");
     window.setFramerateLimit(60);
@@ -69,13 +85,11 @@ int main() {
     window.setMouseCursor(defaultCursor);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        // Attempt to load from the installed share directory.
-        std::string fontPath = "../share/dibujo/arial.ttf";
-        if (!font.loadFromFile(fontPath)) {
-            std::cerr << "Failed to load font 'arial.ttf'." << std::endl;
-            return -1;
-        }
+    if (!font.loadFromFile("arial.ttf") &&
+        !font.loadFromFile("../share/dibujo/arial.ttf") &&
+        !loadFontFromSystem(font, "Arial.ttf")) {
+        std::cerr << "Failed to load font 'Arial.ttf'. Please ensure it exists." << std::endl;
+        return -1;
     }
 
     float rainbowRadius = 20.0f;
