@@ -75,12 +75,20 @@ sf::Color HsvToRgb(float H, float S, float V) {
 }
 
 std::string getAssetPath(const std::string& filename) {
-    std::string currentDir = std::filesystem::current_path();
-    std::string homebrewSharePath = "/usr/local/share/dibujo/";
-    if (std::filesystem::exists(currentDir + "/" + filename)) {
-        return currentDir + "/" + filename;
-    } else if (std::filesystem::exists(homebrewSharePath + filename)) {
-        return homebrewSharePath + filename;
+    using std::filesystem::exists;
+    std::string currentDir = std::filesystem::current_path().string();
+
+    // Paths to check
+    std::vector<std::string> possiblePaths = {
+        currentDir + "/" + filename,
+        "/usr/local/share/dibujo/" + filename,
+        "/opt/homebrew/share/dibujo/" + filename
+    };
+
+    for (const auto& path : possiblePaths) {
+        if (exists(path)) {
+            return path;
+        }
     }
     return "";
 }
@@ -106,10 +114,11 @@ int main() {
 
     sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
 
-    if (!squaresTexture.loadFromFile("squares.png") ||
-        !drawTexture.loadFromFile("draw.png") ||
-        !circleTexture.loadFromFile("circle.png") ||
-        !textTexture.loadFromFile("text.png")) {
+    if (!squaresTexture.loadFromFile(getAssetPath("squares.png")) ||
+        !drawTexture.loadFromFile(getAssetPath("draw.png")) ||
+        !circleTexture.loadFromFile(getAssetPath("circle.png")) ||
+        !textTexture.loadFromFile(getAssetPath("text.png"))) 
+    {
         std::cerr << "Failed to load one or more texture files." << std::endl;
         return -1;
     }
