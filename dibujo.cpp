@@ -148,11 +148,14 @@ int main() {
     };
     int bgColorIndex = 0;
 
-    //sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
-    squaresTexture.loadFromFile("squares.png");
-    drawTexture.loadFromFile("draw.png");
-    circleTexture.loadFromFile("circle.png");
-    textTexture.loadFromFile("text.png");
+    if (!squaresTexture.loadFromFile(getAssetPath("squares.png")) ||
+    !drawTexture.loadFromFile(getAssetPath("draw.png")) ||
+    !circleTexture.loadFromFile(getAssetPath("circle.png")) ||
+    !textTexture.loadFromFile(getAssetPath("text.png"))) {
+
+    std::cerr << "Failed to load one or more texture files." << std::endl;
+    return -1;
+    }
 
     std::vector<sf::Vertex> vertices;
     std::vector<sf::RectangleShape> drawnRectangles;
