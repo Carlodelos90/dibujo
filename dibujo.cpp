@@ -74,6 +74,17 @@ sf::Color HsvToRgb(float H, float S, float V) {
     );
 }
 
+std::string getAssetPath(const std::string& filename) {
+    std::string currentDir = std::filesystem::current_path();
+    std::string homebrewSharePath = "/usr/local/share/dibujo/";
+    if (std::filesystem::exists(currentDir + "/" + filename)) {
+        return currentDir + "/" + filename;
+    } else if (std::filesystem::exists(homebrewSharePath + filename)) {
+        return homebrewSharePath + filename;
+    }
+    return "";
+}
+
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Dibujo v0.1");
@@ -89,6 +100,17 @@ int main() {
         !font.loadFromFile("../share/dibujo/arial.ttf") &&
         !loadFontFromSystem(font, "Arial.ttf")) {
         std::cerr << "Failed to load font 'Arial.ttf'. Please ensure it exists." << std::endl;
+        return -1;
+    }
+
+
+    sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
+
+    if (!squaresTexture.loadFromFile("squares.png") ||
+        !drawTexture.loadFromFile("draw.png") ||
+        !circleTexture.loadFromFile("circle.png") ||
+        !textTexture.loadFromFile("text.png")) {
+        std::cerr << "Failed to load one or more texture files." << std::endl;
         return -1;
     }
 
@@ -126,7 +148,7 @@ int main() {
     };
     int bgColorIndex = 0;
 
-    sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
+    //sf::Texture squaresTexture, drawTexture, circleTexture, textTexture;
     squaresTexture.loadFromFile("squares.png");
     drawTexture.loadFromFile("draw.png");
     circleTexture.loadFromFile("circle.png");
