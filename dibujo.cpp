@@ -95,7 +95,7 @@ std::string getAssetPath(const std::string& filename) {
 
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Dibujo v0.1");
+    sf::RenderWindow window(sf::VideoMode(1024, 768), "Dibujo");
     window.setFramerateLimit(60);
 
     sf::Cursor defaultCursor, textCursor;
@@ -177,7 +177,7 @@ int main() {
     std::string typedString;
     sf::Text currentText;
     currentText.setFont(font);
-    currentText.setCharacterSize(14);
+    currentText.setCharacterSize(21);
     currentText.setFillColor(brushColor);
 
     DrawingMode currentMode = DrawingMode::FreeDraw;
@@ -185,7 +185,7 @@ int main() {
     sf::RectangleShape bgColorButton(sf::Vector2f(100, 30));
     bgColorButton.setFillColor(sf::Color(150, 150, 150));
     bgColorButton.setPosition(10, 10);
-    sf::Text bgColorLabel("BG color", font, 14);
+    sf::Text bgColorLabel("BG color", font, 21);
     bgColorLabel.setFillColor(sf::Color::Black);
     bgColorLabel.setPosition(
         bgColorButton.getPosition().x + (bgColorButton.getSize().x - bgColorLabel.getLocalBounds().width) / 2,
