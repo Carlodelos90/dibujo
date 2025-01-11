@@ -31,10 +31,9 @@ make
 
 - Run the program with:
   ```bash
-  dibujov0.1
+  dibujo
   ```
 - Use the buttons or keyboard shortcuts to switch modes:
-  - **Free Draw**: Shortcut: Default mode
   - **Rectangle**: Button or `R`
   - **Circle**: Button or `C`
   - **Text**: Button or `T`
