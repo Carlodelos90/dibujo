@@ -1,11 +1,11 @@
 
 # Dibujo
 
-Dibujo is a drawing application with features like free drawing, rectangles, circles, and text input (can't change the size of the text yet). It also includes a color picker and supports background color changes.
+Dibujo is a drawing application with features like free drawing, rectangles, circles, and text input (can't change the size of the text yet). It also includes a color picker and supports background color changes. if you want to quickly show/draw something while screensharing or in person, you can quickly open this app via terminal and draw/write whatever you want to show/explain and close it easily with ```⌘ + q``` and continue with your work.
 
 ## Features
 
-- Freehand drawing with adjustable brush thickness.
+- Freehand drawing with adjustable brush thickness (arrow up & down)
 - Draw rectangles, circles, and add text with preview options.
 - A built-in color picker for brush colors.
 - Background color cycling with a button or key shortcut (`B`).
@@ -31,17 +31,16 @@ make
 
 - Run the program with:
   ```bash
-  dibujov0.1
+  dibujo
   ```
 - Use the buttons or keyboard shortcuts to switch modes:
-  - **Free Draw**: Shortcut: Default mode
   - **Rectangle**: Button or `R`
   - **Circle**: Button or `C`
   - **Text**: Button or `T`
 
 ## Dependencies
 
-- [SFML 2](https://www.sfml-dev.org/)
+- [SFML 2](https://www.sfml-dev.org/) (this is supposed to be installed automatically with the homebrew formula)
 
 ## Contributing
 
