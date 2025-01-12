@@ -11,32 +11,37 @@ enum class DrawingMode {
     Circle,
     Text,
     Triangle,
-    Rainbow
+    Rainbow,
+    PaintBucket
 };
 
 sf::Vector2f normalize(const sf::Vector2f& v) {
-    float len = std::sqrt(v.x*v.x + v.y*v.y);
-    if(len != 0) return sf::Vector2f(v.x/len, v.y/len);
+    float length = std::sqrt(v.x*v.x + v.y*v.y);
+    if(length != 0) return sf::Vector2f(v.x/length, v.y/length);
     return v;
 }
 
 bool loadFontFromSystem(sf::Font& font, const std::string& fontName) {
     std::string path = "/System/Library/Fonts/Supplemental/" + fontName;
-    if(std::filesystem::exists(path)) return font.loadFromFile(path);
+    if(std::filesystem::exists(path)) {
+        return font.loadFromFile(path);
+    }
     return false;
 }
 
-std::shared_ptr<sf::VertexArray> makeThickLineSegment(const sf::Vector2f& start,
-                                                      const sf::Vector2f& end,
-                                                      float thickness,
-                                                      sf::Color color)
+std::shared_ptr<sf::VertexArray> makeThickLineSegment(
+    const sf::Vector2f& start,
+    const sf::Vector2f& end,
+    float thickness,
+    sf::Color color)
 {
     auto d = normalize(end - start);
-    auto perp = sf::Vector2f(-d.y,d.x)*(thickness*0.5f);
+    auto perp = sf::Vector2f(-d.y, d.x)*(thickness*0.5f);
     sf::Vector2f p1 = start + perp;
     sf::Vector2f p2 = start - perp;
     sf::Vector2f p3 = end - perp;
     sf::Vector2f p4 = end + perp;
+
     auto quad = std::make_shared<sf::VertexArray>(sf::Quads,4);
     (*quad)[0] = sf::Vertex(p1,color);
     (*quad)[1] = sf::Vertex(p2,color);
@@ -70,47 +75,60 @@ sf::Color HsvToRgb(float H,float S,float V) {
     );
 }
 
-std::string getAssetPath(const std::string& f) {
+std::string getAssetPath(const std::string& name) {
     using std::filesystem::exists;
     std::string c = std::filesystem::current_path().string();
-    std::vector<std::string> paths = {c+"/"+f,"/usr/local/share/dibujo/"+f,"/opt/homebrew/share/dibujo/"+f};
-    for(auto& p:paths) if(exists(p)) return p;
+    std::vector<std::string> paths = {
+        c+"/"+name,
+        "/usr/local/share/dibujo/"+name,
+        "/opt/homebrew/share/dibujo/"+name
+    };
+    for(auto& p:paths){
+        if(exists(p)) return p;
+    }
     return "";
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo Rainbow Mode");
+    sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo with PaintBucket");
     window.setFramerateLimit(60);
-    sf::Cursor curA,curT;
-    curA.loadFromSystem(sf::Cursor::Arrow);
-    curT.loadFromSystem(sf::Cursor::Text);
-    window.setMouseCursor(curA);
+
+    sf::Cursor arrowCursor, textCursor;
+    arrowCursor.loadFromSystem(sf::Cursor::Arrow);
+    textCursor.loadFromSystem(sf::Cursor::Text);
+    window.setMouseCursor(arrowCursor);
+
     sf::Font font;
     if(!font.loadFromFile("arial.ttf") &&
        !font.loadFromFile("../share/dibujo/arial.ttf") &&
-       !loadFontFromSystem(font,"Arial.ttf")){
+       !loadFontFromSystem(font,"Arial.ttf"))
+    {
         std::cerr<<"Failed to load font.\n";
         return -1;
     }
-    sf::Texture squaresT,drawT,circleT,textT,triangleT,rainbowModeT;
-    if(!squaresT.loadFromFile(getAssetPath("squares.png"))||
-       !drawT.loadFromFile(getAssetPath("draw.png"))||
-       !circleT.loadFromFile(getAssetPath("circle.png"))||
-       !textT.loadFromFile(getAssetPath("text.png"))||
-       !triangleT.loadFromFile(getAssetPath("triangle.png"))||
-       !rainbowModeT.loadFromFile(getAssetPath("rainbow.png"))){
+
+    sf::Texture squaresT, drawT, circleT, textT, triangleT, rainbowModeT, bucketT;
+    if(!squaresT.loadFromFile(getAssetPath("squares.png")) ||
+       !drawT.loadFromFile(getAssetPath("draw.png")) ||
+       !circleT.loadFromFile(getAssetPath("circle.png")) ||
+       !textT.loadFromFile(getAssetPath("text.png")) ||
+       !triangleT.loadFromFile(getAssetPath("triangle.png")) ||
+       !rainbowModeT.loadFromFile(getAssetPath("rainbow.png")) ||
+       !bucketT.loadFromFile(getAssetPath("bucket.png")))
+    {
         std::cerr<<"Failed to load textures.\n";
         return -1;
     }
-    float rRadius=20.f;
-    int diam=(int)(rRadius*2.f);
+
+    float rainbowRadius=20.f;
+    int diam=(int)(rainbowRadius*2.f);
     sf::Image rImg;
     rImg.create(diam,diam,sf::Color::Transparent);
     for(int y=0;y<diam;y++){
         for(int x=0;x<diam;x++){
-            float dx=x-rRadius,dy=y-rRadius;
+            float dx=x-rainbowRadius,dy=y-rainbowRadius;
             float dist=std::sqrt(dx*dx+dy*dy);
-            if(dist<=rRadius){
+            if(dist<=rainbowRadius){
                 float angle=std::atan2(dy,dx);
                 if(angle<0)angle+=6.2831853f;
                 float hue=angle/(6.2831853f)*360.f;
@@ -118,11 +136,12 @@ int main() {
             }
         }
     }
-    sf::Texture rTex;
-    rTex.loadFromImage(rImg);
-    sf::CircleShape colorWheel(rRadius);
-    colorWheel.setTexture(&rTex);
-    colorWheel.setPosition((float)(1024-diam-10),10.f);
+    sf::Texture colorWheelT;
+    colorWheelT.loadFromImage(rImg);
+    sf::CircleShape colorWheel(rainbowRadius);
+    colorWheel.setTexture(&colorWheelT);
+    colorWheel.setPosition(1024-(float)diam-10.f,10.f);
+
     sf::Color bgc(62,63,63),brush(211,211,211);
     float thick=5.f;
     std::vector<sf::Color> bgColors={
@@ -132,46 +151,63 @@ int main() {
     };
     int bgIndex=0;
     std::vector<std::shared_ptr<sf::Drawable>> stack;
-    bool isDrawing=false,showPicker=false,isRect=false,isCircle=false,isTyping=false,isTri=false;
+
+    bool isDrawing=false, showPicker=false, isRect=false, isCircle=false,
+         isTyping=false, isTri=false, rainbowModeActive=false;
     float rainbowHue=0.f;
-    bool rainbowModeActive=false;
+
     int triClicks=0;
     sf::Vector2f triPts[3];
     std::vector<std::shared_ptr<sf::Drawable>> stroke;
-    sf::Vector2f lastPos,rectStart,circCenter;
+    sf::Vector2f lastPos, rectStart, circCenter;
     std::string typed;
     sf::Text currText;
     currText.setFont(font);
     currText.setCharacterSize(21);
     currText.setFillColor(brush);
+
     DrawingMode mode=DrawingMode::FreeDraw;
+
     sf::RectangleShape bgBtn({100.f,30.f});
     bgBtn.setFillColor(sf::Color(150,150,150));
     bgBtn.setPosition(10.f,10.f);
+
     sf::Text bgLbl("BG color",font,21);
     bgLbl.setFillColor(sf::Color::Black);
     bgLbl.setPosition(bgBtn.getPosition().x+(bgBtn.getSize().x-bgLbl.getLocalBounds().width)/2.f,
                       bgBtn.getPosition().y+(bgBtn.getSize().y-bgLbl.getLocalBounds().height)/2.f-5.f);
+
     sf::RectangleShape squaresBtn({70.f,30.f});
     squaresBtn.setTexture(&squaresT);
     squaresBtn.setPosition(250.f,10.f);
+
     sf::RectangleShape drawBtn({70.f,30.f});
     drawBtn.setTexture(&drawT);
     drawBtn.setPosition(330.f,10.f);
+
     sf::RectangleShape circleBtn({70.f,30.f});
     circleBtn.setTexture(&circleT);
     circleBtn.setPosition(410.f,10.f);
+
     sf::RectangleShape textBtn({70.f,30.f});
     textBtn.setTexture(&textT);
     textBtn.setPosition(490.f,10.f);
+
     sf::RectangleShape triBtn({70.f,30.f});
     triBtn.setTexture(&triangleT);
     triBtn.setPosition(570.f,10.f);
+
     sf::RectangleShape rainbowModeBtn({70.f,30.f});
     rainbowModeBtn.setTexture(&rainbowModeT);
     rainbowModeBtn.setPosition(650.f,10.f);
+
+    sf::RectangleShape bucketBtn({70.f,30.f});
+    bucketBtn.setTexture(&bucketT);
+    bucketBtn.setPosition(730.f,10.f);
+
     sf::RectangleShape colorPick({150.f,150.f});
     colorPick.setPosition(10.f,50.f);
+
     while(window.isOpen()){
         sf::Event ev;
         while(window.pollEvent(ev)){
@@ -202,6 +238,9 @@ int main() {
                         mode=DrawingMode::Rainbow;
                         rainbowModeActive=true;
                     }
+                    else if(bucketBtn.getGlobalBounds().contains((float)mp.x,(float)mp.y)){
+                        mode=DrawingMode::PaintBucket;
+                    }
                     else if(colorWheel.getGlobalBounds().contains((float)mp.x,(float)mp.y)){
                         showPicker=!showPicker;
                     }
@@ -221,8 +260,8 @@ int main() {
                             circCenter=sf::Vector2f((float)mp.x,(float)mp.y);
                             isCircle=true;
                         }
-                        else if(mode==DrawingMode::Text&&!isTyping){
-                            window.setMouseCursor(curT);
+                        else if(mode==DrawingMode::Text && !isTyping){
+                            window.setMouseCursor(textCursor);
                             currText.setPosition((float)mp.x,(float)mp.y);
                             currText.setFillColor(brush);
                             typed.clear();
@@ -255,10 +294,59 @@ int main() {
                                 }
                             }
                         }
-                        else if(mode==DrawingMode::FreeDraw || mode==DrawingMode::Rainbow){
+                        else if(mode==DrawingMode::FreeDraw||mode==DrawingMode::Rainbow){
                             isDrawing=true;
                             lastPos=sf::Vector2f((float)mp.x,(float)mp.y);
                             stroke.clear();
+                        }
+                        else if(mode==DrawingMode::PaintBucket){
+                            bool shapeFound=false;
+                            for(auto it=stack.rbegin(); it!=stack.rend(); ++it){
+                                // We check from top to bottom
+                                sf::Drawable* raw=it->get();
+                                // We do dynamic_cast checks for each type:
+                                if(auto rect=dynamic_cast<sf::RectangleShape*>(raw)){
+                                    if(rect->getGlobalBounds().contains((float)mp.x,(float)mp.y)){
+                                        rect->setFillColor(brush);
+                                        shapeFound=true;
+                                        break;
+                                    }
+                                }
+                                else if(auto circ=dynamic_cast<sf::CircleShape*>(raw)){
+                                    auto pos=circ->getPosition();
+                                    float r=circ->getRadius();
+                                    sf::Vector2f diff((float)mp.x-pos.x,(float)mp.y-pos.y);
+                                    if(std::sqrt(diff.x*diff.x+diff.y*diff.y)<=r){
+                                        circ->setFillColor(brush);
+                                        shapeFound=true;
+                                        break;
+                                    }
+                                }
+                                else if(auto tri=dynamic_cast<sf::ConvexShape*>(raw)){
+                                    // A simple bounding check first
+                                    auto gb=tri->getGlobalBounds();
+                                    if(gb.contains((float)mp.x,(float)mp.y)){
+                                        tri->setFillColor(brush);
+                                        shapeFound=true;
+                                        break;
+                                    }
+                                }
+                                else if(auto tx=dynamic_cast<sf::Text*>(raw)){
+                                    auto gb=tx->getGlobalBounds();
+                                    if(gb.contains((float)mp.x,(float)mp.y)){
+                                        tx->setFillColor(brush);
+                                        shapeFound=true;
+                                        break;
+                                    }
+                                }
+                                else if(auto va=dynamic_cast<sf::VertexArray*>(raw)){
+                                    // Typically a free-draw stroke won't do a point-in-shape test easily
+                                    // We'll skip painting free-draw lines for simplicity
+                                }
+                            }
+                            if(!shapeFound){
+                                bgc=brush;
+                            }
                         }
                     }
                 }
@@ -308,7 +396,7 @@ int main() {
                         stroke.clear();
                         isDrawing=false;
                     }
-                    if(mode==DrawingMode::Text) window.setMouseCursor(curA);
+                    if(mode==DrawingMode::Text) window.setMouseCursor(arrowCursor);
                 }
             }
             else if(ev.type==sf::Event::TextEntered && isTyping){
@@ -324,10 +412,10 @@ int main() {
             }
             else if(ev.type==sf::Event::KeyPressed){
                 if(isTyping && ev.key.code==sf::Keyboard::Escape){
-                    auto textPtr=std::make_shared<sf::Text>(currText);
-                    stack.push_back(textPtr);
+                    auto tx=std::make_shared<sf::Text>(currText);
+                    stack.push_back(tx);
                     isTyping=false;
-                    window.setMouseCursor(curA);
+                    window.setMouseCursor(arrowCursor);
                 }
                 else if(ev.key.code==sf::Keyboard::C){
                     stack.clear();
@@ -351,45 +439,56 @@ int main() {
             sf::Vector2i mp=sf::Mouse::getPosition(window);
             sf::Vector2f cp((float)mp.x,(float)mp.y);
             if(cp!=lastPos){
-                auto q=makeThickLineSegment(lastPos,cp,thick,brush);
-                stroke.push_back(q);
+                auto seg=makeThickLineSegment(lastPos,cp,thick,brush);
+                stroke.push_back(seg);
                 lastPos=cp;
             }
         }
+        if(rainbowModeActive && mode==DrawingMode::Rainbow){
+            brush=HsvToRgb(rainbowHue,1.f,1.f);
+            rainbowHue+=0.5f;
+            if(rainbowHue>360.f) rainbowHue-=360.f;
+        }
         window.clear(bgc);
-        for(auto& s:stack) window.draw(*s);
-        for(auto& q:stroke) window.draw(*q);
+        for(auto& d:stack){
+            window.draw(*d);
+        }
+        for(auto& seg:stroke){
+            window.draw(*seg);
+        }
         if(isTyping){
             window.draw(currText);
             static sf::Clock cl;
             bool vis=((int)(cl.getElapsedTime().asSeconds()/0.5f)%2==0);
             if(vis){
-                sf::RectangleShape c(sf::Vector2f(1.f,currText.getCharacterSize()));
-                sf::FloatRect tB=currText.getLocalBounds();
-                c.setPosition(currText.getPosition().x+tB.width+2.f,currText.getPosition().y);
-                c.setFillColor(sf::Color::Black);
-                window.draw(c);
+                sf::RectangleShape cc(sf::Vector2f(1.f,currText.getCharacterSize()));
+                sf::FloatRect tb=currText.getLocalBounds();
+                cc.setPosition(currText.getPosition().x+tb.width+2.f,currText.getPosition().y);
+                cc.setFillColor(sf::Color::Black);
+                window.draw(cc);
             }
         }
         if(isTri && triClicks>0 && triClicks<3){
             sf::Vector2i mp=sf::Mouse::getPosition(window);
-            sf::Vector2f m((float)mp.x,(float)mp.y);
+            sf::Vector2f current((float)mp.x,(float)mp.y);
             int pc=triClicks+1;
-            sf::ConvexShape pre(pc);
-            for(int i=0;i<triClicks;++i) pre.setPoint(i,triPts[i]);
-            pre.setPoint(pc-1,m);
-            pre.setFillColor(sf::Color::Transparent);
-            pre.setOutlineColor(sf::Color::Black);
-            pre.setOutlineThickness(1.f);
-            window.draw(pre);
+            sf::ConvexShape preview(pc);
+            for(int i=0;i<triClicks;++i){
+                preview.setPoint(i,triPts[i]);
+            }
+            preview.setPoint(pc-1,current);
+            preview.setFillColor(sf::Color::Transparent);
+            preview.setOutlineColor(sf::Color::Black);
+            preview.setOutlineThickness(1.f);
+            window.draw(preview);
         }
         if(isRect && mode==DrawingMode::Rectangle){
             sf::Vector2i mp=sf::Mouse::getPosition(window);
             sf::Vector2f cp((float)mp.x,(float)mp.y);
-            sf::Vector2f tl(std::min(rectStart.x,cp.x),std::min(rectStart.y,cp.y));
+            sf::Vector2f topleft(std::min(rectStart.x,cp.x),std::min(rectStart.y,cp.y));
             sf::Vector2f sz(std::fabs(cp.x-rectStart.x),std::fabs(cp.y-rectStart.y));
             sf::RectangleShape pr(sz);
-            pr.setPosition(tl);
+            pr.setPosition(topleft);
             pr.setFillColor(sf::Color::Transparent);
             pr.setOutlineColor(sf::Color::Black);
             pr.setOutlineThickness(1.f);
@@ -408,15 +507,15 @@ int main() {
             window.draw(c);
         }
         if(showPicker){
-            sf::Image colIm;
-            colIm.create((unsigned int)colorPick.getSize().x,(unsigned int)colorPick.getSize().y);
-            for(unsigned int x=0;x<colIm.getSize().x;x++){
-                for(unsigned int y=0;y<colIm.getSize().y;y++){
-                    colIm.setPixel(x,y,getColorFromPosition(x,y,colIm.getSize().x,colIm.getSize().y));
+            sf::Image im;
+            im.create((unsigned int)colorPick.getSize().x,(unsigned int)colorPick.getSize().y);
+            for(unsigned int xx=0;xx<im.getSize().x;xx++){
+                for(unsigned int yy=0;yy<im.getSize().y;yy++){
+                    im.setPixel(xx,yy,getColorFromPosition(xx,yy,im.getSize().x,im.getSize().y));
                 }
             }
             sf::Texture ctex;
-            ctex.loadFromImage(colIm);
+            ctex.loadFromImage(im);
             colorPick.setTexture(&ctex);
             window.draw(colorPick);
         }
@@ -428,6 +527,7 @@ int main() {
         window.draw(textBtn);
         window.draw(triBtn);
         window.draw(rainbowModeBtn);
+        window.draw(bucketBtn);
         window.draw(colorWheel);
         window.display();
     }
