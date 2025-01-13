@@ -94,7 +94,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo");
     window.setFramerateLimit(60);
 
-    LogoManager::setWindowIcon(window, "logo.png");
+    auto logoPath = getAssetPath("logo.png");
+    LogoManager::setWindowIcon(window, logoPath);
 
     sf::Cursor arrowCursor, textCursor;
     arrowCursor.loadFromSystem(sf::Cursor::Arrow);
