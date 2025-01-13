@@ -1,4 +1,29 @@
-![https://github.com/soycarlo99/dibujo/blob/main/logo.png?raw=true](https://github.com/soycarlo99/dibujo/blob/main/logo.png?raw=true)
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Logo</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px; /* Optional: Makes the edges rounded */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Optional: Adds a shadow */
+        }
+    </style>
+</head>
+<body>
+    <img src="https://github.com/soycarlo99/dibujo/blob/main/logo.png?raw=true" alt="Program Logo">
+</body>
+</html>
 # Dibujo
 
 Dibujo is a drawing application with features like free drawing, rectangles, circles, and text input (can't change the size of the text yet). It also includes a color picker and supports background color changes. if you want to quickly show/draw something while screensharing or in person, you can quickly open this app via terminal and draw/write whatever you want to show/explain and close it easily with ```⌘ + q``` and continue with your work.
