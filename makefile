@@ -4,7 +4,7 @@ CXXFLAGS ?= -std=c++17 -I/opt/homebrew/opt/sfml@2/include
 LDFLAGS ?= -L/opt/homebrew/opt/sfml@2/lib -lsfml-graphics -lsfml-window -lsfml-system
 
 # Target executable and source file
-TARGET = dibujo_v0.06
+TARGET = dibujo_v0.08
 SRC = dibujo.cpp LogoManager.cpp
 
 # Default target to build the executable
