@@ -302,9 +302,7 @@ int main() {
                         else if(mode==DrawingMode::PaintBucket){
                             bool shapeFound=false;
                             for(auto it=stack.rbegin(); it!=stack.rend(); ++it){
-                                // We check from top to bottom
                                 sf::Drawable* raw=it->get();
-                                // We do dynamic_cast checks for each type:
                                 if(auto rect=dynamic_cast<sf::RectangleShape*>(raw)){
                                     if(rect->getGlobalBounds().contains((float)mp.x,(float)mp.y)){
                                         rect->setFillColor(brush);
@@ -323,7 +321,6 @@ int main() {
                                     }
                                 }
                                 else if(auto tri=dynamic_cast<sf::ConvexShape*>(raw)){
-                                    // A simple bounding check first
                                     auto gb=tri->getGlobalBounds();
                                     if(gb.contains((float)mp.x,(float)mp.y)){
                                         tri->setFillColor(brush);
@@ -340,8 +337,6 @@ int main() {
                                     }
                                 }
                                 else if(auto va=dynamic_cast<sf::VertexArray*>(raw)){
-                                    // Typically a free-draw stroke won't do a point-in-shape test easily
-                                    // We'll skip painting free-draw lines for simplicity
                                 }
                             }
                             if(!shapeFound){
