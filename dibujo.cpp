@@ -94,6 +94,7 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo");
     window.setFramerateLimit(60);
 
+    //handels logo manager 
     auto logoPath = getAssetPath("logo.png");
     LogoManager::setWindowIcon(window, logoPath);
 
