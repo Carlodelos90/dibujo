@@ -4,6 +4,7 @@
 #include <cmath>
 #include <iostream>
 #include <filesystem>
+#include "LogoManager.hpp"
 
 enum class DrawingMode {
     FreeDraw,
@@ -90,8 +91,10 @@ std::string getAssetPath(const std::string& name) {
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo with PaintBucket");
+    sf::RenderWindow window(sf::VideoMode(1024,768),"Dibujo");
     window.setFramerateLimit(60);
+
+    LogoManager::setWindowIcon(window, "logo.png");
 
     sf::Cursor arrowCursor, textCursor;
     arrowCursor.loadFromSystem(sf::Cursor::Arrow);
