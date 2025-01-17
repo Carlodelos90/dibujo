@@ -28,7 +28,7 @@ Clone the repository and build the program manually:
 git clone https://github.com/soycarlo99/dibujo.git
 cd dibujo
 make
-./dibujov0.1
+./dibujo
 ```
 
 ## Usage
